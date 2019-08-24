@@ -7,7 +7,6 @@ module.exports = (http) => {
   let rooms = {};
   let roomId = null;
   let socketIds = {};
-  let roomIdList = Array();
 
   /**
    * SocketId로 방을 탐색 합니다.
@@ -98,6 +97,7 @@ module.exports = (http) => {
       const roomId = findRoomBySocketId(socket.id);
       if (roomId) {
         socket.broadcast.to(roomId).emit('leave', rooms[roomId][socket.id]); // 자신 제외 룸안의 유저ID 전달
+        rooms[roomId]["roomLength"] -= 1;
         delete rooms[roomId][socket.id]; // 해당 유저 제거
       }
     });
