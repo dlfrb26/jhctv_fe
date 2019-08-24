@@ -15,6 +15,14 @@ const path = {
   frontend: `${root}/frontend`
 };
 
+var https = require('https'); // ← 追加
+var fs = require('fs');       // ← 追加
+
+var options = {
+  key: fs.readFileSync('./server.rsa'),
+  cert: fs.readFileSync('./server.crt')
+};
+
 app.set('views', path.frontend + '/views');
 app.engine('ejs', ejs.renderFile);
 app.use(express.static(path.frontend + '/contents'));
@@ -24,9 +32,11 @@ app.use(express.static(path.frontend + '/views/examples'));
 require('./controllers/route.js')(app);
 
 // Socket.io ======================================================================
-require('./controllers/socket.js')(http);
+require('./controllers/socket.js')(https);
+
+https.createServer(options, app).listen(port);
 
 // Server listen
-http.listen(port, function() {
-  console.log('WebRTC Lab server running at ' + config.webserver.host + ':' + port);
-});
+// http.listen(port, function() {
+//   console.log('WebRTC Lab server running at ' + config.webserver.host + ':' + port);
+// });
